@@ -1,3 +1,5 @@
+// App.js
+
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -14,8 +16,10 @@ import Shuffle from "./components/Shuffle";
 import Profile from "./components/Profile";
 import Footer from "./common/Footer";
 import Player from "./components/Player";
-
 import { useAuth } from "./contexts/AuthContext";
+import Upload from "./components/Upload";
+import Contents from "./components/Contents";
+import UserStatusManager from "./components/UserStatusManager"; // Import UserStatusManager
 
 const App = () => {
   const { isAuthenticated } = useAuth();
@@ -28,14 +32,23 @@ const App = () => {
             <Route
               path="/"
               element={
-                !isAuthenticated ? <Register /> : <Navigate to="/dashboard" />
+                isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
               }
             />
-            <Route path="/player" element={<Player />} />
             <Route
               path="/login"
               element={
                 !isAuthenticated ? <Login /> : <Navigate to="/dashboard" />
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                !isAuthenticated ? <Register /> : <Navigate to="/dashboard" />
               }
             />
             <Route
@@ -45,20 +58,36 @@ const App = () => {
               }
             />
             <Route
+              path="/upload"
+              element={isAuthenticated ? <Upload /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/contents"
+              element={
+                isAuthenticated ? <Contents /> : <Navigate to="/login" />
+              }
+            />
+            <Route
               path="/hero"
               element={isAuthenticated ? <Hero /> : <Navigate to="/login" />}
             />
             <Route
-              path="/Shuffle"
+              path="/shuffle"
               element={isAuthenticated ? <Shuffle /> : <Navigate to="/login" />}
             />
             <Route
-              path="/Profile"
+              path="/profile"
               element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/player"
+              element={isAuthenticated ? <Player /> : <Navigate to="/login" />}
             />
           </Routes>
         </div>
         {isAuthenticated && <Footer />}
+        {isAuthenticated && <UserStatusManager />}{" "}
+        {/* Add UserStatusManager here */}
       </div>
     </Router>
   );

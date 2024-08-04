@@ -1,10 +1,11 @@
 // src/components/Hero.js
 import React, { useState, useEffect } from "react";
-import { ref, listAll, getDownloadURL } from "firebase/storage";
+import { ref, listAll, getDownloadURL, getMetadata } from "firebase/storage";
 import { storage } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { IoPlayCircle } from "react-icons/io5";
+import ReactPlayer from "react-player";
 import Loading from "../common/Loading";
+import { IoPlayCircle } from "react-icons/io5";
 
 const Hero = () => {
   const [videos, setVideos] = useState([]);
@@ -14,15 +15,23 @@ const Hero = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const folderRef = ref(storage, "videos"); // Replace 'videos' with your folder name
+        const folderRef = ref(storage, "videos");
         const videoRefs = await listAll(folderRef);
-        const videoURLs = await Promise.all(
+        const videoDetails = await Promise.all(
           videoRefs.items.map(async (itemRef) => {
             const videoURL = await getDownloadURL(itemRef);
-            return { url: videoURL, name: itemRef.name };
+            const metadata = await getMetadata(itemRef);
+            const videoTitle = metadata.customMetadata?.title || "New Video";
+            const thumbnailURL = metadata.customMetadata?.thumbnail; // Get the thumbnail URL from metadata
+
+            return {
+              url: videoURL,
+              name: videoTitle,
+              thumbnail: thumbnailURL,
+            };
           })
         );
-        setVideos(videoURLs);
+        setVideos(videoDetails);
       } catch (error) {
         console.error("Error fetching videos: ", error);
       } finally {
@@ -53,8 +62,28 @@ const Hero = () => {
                 className="relative w-[280px] h-[200px] cursor-pointer"
                 onClick={() => handleVideoClick(video)}
               >
-                <div className="border bg-gray-400 w-full h-full rounded-md flex items-center justify-center">
-                  <IoPlayCircle className="text-white text-6xl absolute" />
+                <div className="border bg-gray-400 w-full h-full rounded-md overflow-hidden">
+                  {video.thumbnail ? (
+                    <img
+                      src={video.thumbnail}
+                      alt={video.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ReactPlayer
+                      url={video.url}
+                      light={video.thumbnail}
+                      playing={false}
+                      width="100%"
+                      height="100%"
+                      controls
+                      playIcon={
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <IoPlayCircle className="text-white text-6xl" />
+                        </div>
+                      }
+                    />
+                  )}
                   <h1 className="absolute bottom-2 left-2 text-white bg-black bg-opacity-50 px-2 py-1 rounded">
                     {video.name}
                   </h1>

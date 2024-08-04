@@ -16,7 +16,7 @@ const useSignup = () => {
       setError(null);
       setLoading(true);
       const res = await fetch(
-        "https://new.paynetmastercard.com/api/auth/signup",
+        "https://habeshan.ashara-buildingdesigns.com/api/auth/signup",
         {
           method: "POST",
           headers: {
