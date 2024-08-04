@@ -88,7 +88,6 @@ const Register = () => {
               <Select size="large" placeholder="Select your gender">
                 <Option value="male">Male</Option>
                 <Option value="female">Female</Option>
-                <Option value="other">Other</Option>
               </Select>
             </Form.Item>
             <Form.Item
