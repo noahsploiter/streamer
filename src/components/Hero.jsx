@@ -1,4 +1,3 @@
-// src/components/Hero.js
 import React, { useState, useEffect } from "react";
 import { ref, listAll, getDownloadURL, getMetadata } from "firebase/storage";
 import { storage } from "../firebase";
@@ -6,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ReactPlayer from "react-player";
 import Loading from "../common/Loading";
 import { IoPlayCircle } from "react-icons/io5";
+import { FaTelegram } from "react-icons/fa";
 
 const Hero = () => {
   const [videos, setVideos] = useState([]);
@@ -13,6 +13,8 @@ const Hero = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let isMounted = true; // Flag to track component mount status
+
     const fetchVideos = async () => {
       try {
         const folderRef = ref(storage, "videos");
@@ -22,7 +24,7 @@ const Hero = () => {
             const videoURL = await getDownloadURL(itemRef);
             const metadata = await getMetadata(itemRef);
             const videoTitle = metadata.customMetadata?.title || "New Video";
-            const thumbnailURL = metadata.customMetadata?.thumbnail; // Get the thumbnail URL from metadata
+            const thumbnailURL = metadata.customMetadata?.thumbnail;
 
             return {
               url: videoURL,
@@ -31,19 +33,32 @@ const Hero = () => {
             };
           })
         );
-        setVideos(videoDetails);
+
+        if (isMounted) {
+          setVideos(videoDetails); // Update state only if component is mounted
+        }
       } catch (error) {
         console.error("Error fetching videos: ", error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false); // Update state only if component is mounted
+        }
       }
     };
 
     fetchVideos();
+
+    return () => {
+      isMounted = false; // Cleanup function to set the flag to false
+    };
   }, []);
 
   const handleVideoClick = (video) => {
-    navigate("/player", { state: { video } });
+    navigate("/player", { state: { video, allVideos: videos } }); // Pass all videos
+  };
+
+  const handleTelegramClick = () => {
+    window.open("https://t.me/ikeepmyword1", "_blank");
   };
 
   return (
@@ -92,6 +107,14 @@ const Hero = () => {
             ))
           )}
         </div>
+      </div>
+
+      {/* Telegram Icon */}
+      <div
+        className="fixed bottom-[100px] right-5 cursor-pointer bg-blue-500 rounded-full p-3 shadow-lg"
+        onClick={handleTelegramClick}
+      >
+        <FaTelegram className="text-white text-xl" />
       </div>
     </div>
   );

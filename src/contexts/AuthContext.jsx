@@ -23,13 +23,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (newToken, newData) => {
-    localStorage.setItem(
-      "user_data",
-      JSON.stringify({ userToken: newToken, user: newData })
-    );
-    setToken(newToken);
-    setUserData(newData);
-    setIsAuthenticated(true);
+    try {
+      localStorage.setItem(
+        "user_data",
+        JSON.stringify({ userToken: newToken, user: newData })
+      );
+      setToken(newToken);
+      setUserData(newData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Failed to save user data to local storage", error);
+    }
   };
 
   const logout = () => {

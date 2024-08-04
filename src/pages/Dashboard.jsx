@@ -1,17 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import Admin from "./Admin";
+import Loading from "../common/Loading";
 
 const Dashboard = () => {
-  const { userData, isAuthenticated } = useAuth();
+  const { userData, isAuthenticated, isLoading, error } = useAuth();
+  const [redirectPath, setRedirectPath] = useState(null);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+  useEffect(() => {
+    if (!isLoading) {
+      if (error) {
+        console.error("Error fetching user data:", error);
+        setRedirectPath("/error"); // Assuming you have an error page
+      } else if (!isAuthenticated) {
+        setRedirectPath("/login");
+      } else if (userData?.role !== "admin") {
+        setRedirectPath("/hero");
+      }
+    }
+  }, [isLoading, isAuthenticated, userData, error]);
+
+  if (isLoading) {
+    return <Loading />;
   }
 
-  if (userData.role !== "admin") {
-    return <Navigate to="/hero" />;
+  if (redirectPath) {
+    return <Navigate to={redirectPath} />;
   }
 
   return <Admin />;

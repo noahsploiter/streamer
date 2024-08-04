@@ -18,13 +18,13 @@ const Footer = () => {
         <FaHome className="text-2xl" />
         <span className="text-sm">Home</span>
       </Link>
-      <Link
+      {/* <Link
         to="/shuffle"
         className={`flex flex-col items-center ${getLinkClass("/shuffle")}`}
       >
         <FaRandom className="text-2xl" />
         <span className="text-sm">Shuffle</span>
-      </Link>
+      </Link> */}
       <Link
         to="/profile"
         className={`flex flex-col items-center ${getLinkClass("/profile")}`}

@@ -1,5 +1,3 @@
-// App.js
-
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -19,10 +17,13 @@ import Player from "./components/Player";
 import { useAuth } from "./contexts/AuthContext";
 import Upload from "./components/Upload";
 import Contents from "./components/Contents";
-import UserStatusManager from "./components/UserStatusManager"; // Import UserStatusManager
+import UserStatusManager from "./components/UserStatusManager";
 
 const App = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userData } = useAuth();
+
+  // Example of role-based route access
+  const isAdmin = userData?.role === "admin";
 
   return (
     <Router>
@@ -86,8 +87,7 @@ const App = () => {
           </Routes>
         </div>
         {isAuthenticated && <Footer />}
-        {isAuthenticated && <UserStatusManager />}{" "}
-        {/* Add UserStatusManager here */}
+        {isAuthenticated && <UserStatusManager />}
       </div>
     </Router>
   );
